@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { CommentForm } from "./comment-form";
+import { LikeButton } from "./like-button";
 
 const CATEGORY_LABELS: Record<string, string> = {
   strategy: "공략",
@@ -21,7 +22,7 @@ export default async function PostDetailPage({
   const supabase = await createClient();
   const { data: post } = await supabase
     .from("posts")
-    .select("id, title, body, category, created_at, profiles(nickname)")
+    .select("id, title, body, category, created_at, profiles!posts_author_id_fkey(nickname)")
     .eq("id", Number(postId))
     .eq("game_id", gameId)
     .maybeSingle();
@@ -34,6 +35,22 @@ export default async function PostDetailPage({
     .order("created_at", { ascending: true });
 
   const { data: { user } } = await supabase.auth.getUser();
+
+  const { count: likeCount } = await supabase
+    .from("post_likes")
+    .select("*", { count: "exact", head: true })
+    .eq("post_id", post.id);
+
+  const liked = user
+    ? !!(
+        await supabase
+          .from("post_likes")
+          .select("post_id")
+          .eq("post_id", post.id)
+          .eq("user_id", user.id)
+          .maybeSingle()
+      ).data
+    : false;
 
   return (
     <main className="mx-auto max-w-2xl p-4">
@@ -50,6 +67,10 @@ export default async function PostDetailPage({
         {post.profiles?.nickname} · {new Date(post.created_at).toLocaleDateString("ko-KR")}
       </p>
       <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">{post.body}</p>
+
+      <div className="mt-3">
+        <LikeButton postId={post.id} initialLiked={liked} initialCount={likeCount ?? 0} isLoggedIn={!!user} />
+      </div>
 
       <div className="mt-5 border-t pt-3">
         <p className="mb-2 text-xs font-bold text-muted-foreground">댓글 ({comments?.length ?? 0})</p>

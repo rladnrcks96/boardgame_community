@@ -158,6 +158,39 @@ export type Database = {
         }
         Relationships: []
       }
+      post_likes: {
+        Row: {
+          created_at: string
+          post_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           author_id: string
@@ -318,16 +351,19 @@ export type Database = {
         Row: {
           achievement_id: number
           earned_at: string
+          notified: boolean
           user_id: string
         }
         Insert: {
           achievement_id: number
           earned_at?: string
+          notified?: boolean
           user_id: string
         }
         Update: {
           achievement_id?: number
           earned_at?: string
+          notified?: boolean
           user_id?: string
         }
         Relationships: [

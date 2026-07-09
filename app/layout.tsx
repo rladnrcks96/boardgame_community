@@ -5,6 +5,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Toaster } from "@/components/ui/sonner";
+import { AchievementNotifier } from "@/components/achievements/achievement-notifier";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -25,6 +26,7 @@ export default function RootLayout({
           <SiteHeader />
           {children}
           <Toaster />
+          <AchievementNotifier />
         </ThemeProvider>
       </body>
     </html>

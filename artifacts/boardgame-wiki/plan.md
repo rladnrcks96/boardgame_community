@@ -355,7 +355,7 @@
 
 ---
 
-### Task 10: 게시글 좋아요
+### Task 10: 게시글 좋아요 — ✅ 완료 (PostgREST 임베드 모호성, user_achievements UPDATE 정책 누락, AchievementNotifier 리마운트 버그 3건 발견·수정)
 
 - **담당 시나리오**: Scenario 10 (full), Scenario 12 (본인 게시글 첫 좋아요 받음 업적만)
 - **크기**: M (3 파일)

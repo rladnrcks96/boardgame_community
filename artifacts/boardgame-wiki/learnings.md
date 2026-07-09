@@ -69,3 +69,23 @@ applied: not-yet
 **상황**: `page.getByRole("alert")`로 폼 에러 메시지를 찾는 테스트가 login/signup/wiki-edit 세 파일에서 반복적으로 "resolved to 2 elements" 에러를 냄. Next.js가 페이지 전환을 스크린리더에 알리기 위해 `<div role="alert" id="__next-route-announcer__">`를 항상 렌더링해서, 앱의 에러 메시지 `role="alert"`와 항상 겹친다.
 **판단**: `getByRole("alert")` 대신 `getByText(정확한 문구)` 또는 `[data-slot="field-error"]`처럼 더 구체적인 locator를 쓰도록 세 파일 모두 수정.
 **다시 마주칠 가능성**: 높음 — Next.js App Router를 쓰는 한 이 라우트 어나운서는 항상 존재한다. 앞으로 에러 메시지 assertion은 처음부터 `getByRole("alert")`를 쓰지 않는 걸 기본 규칙으로 삼는 게 낫다.
+
+---
+category: correctness
+applied: not-yet
+---
+## posts 테이블 추가로 PostgREST의 `profiles(nickname)` 임베드가 모호해짐
+
+**상황**: Task 10에서 `post_likes`(다대다: posts↔profiles)를 만들자, 이미 있던 `posts` → `profiles(nickname)` 임베드 조회(author_id를 통한 단순 FK)가 "more than one relationship was found" 에러로 깨짐. 새 테이블이 두 번째 경로를 만들어서 PostgREST가 어느 관계를 쓸지 더 이상 추측 못 하게 됨. 증상은 게시글 상세 페이지가 전부 404로 보이는 것이었는데, 원인은 라우팅이 아니라 쿼리였다.
+**판단**: `profiles!posts_author_id_fkey(nickname)` 처럼 FK 이름을 명시해 모호성을 없앰.
+**다시 마주칠 가능성**: 높음 — 두 테이블 사이에 새로운 관계(특히 다대다 조인 테이블)를 추가할 때마다, 기존에 암묵적 임베드(`table(column)` 축약형)를 쓰던 다른 쿼리들이 갑자기 깨질 수 있다. 새 테이블을 추가한 뒤에는 관련된 기존 임베드 쿼리를 전부 재확인하는 습관이 필요하다.
+
+---
+category: correctness
+applied: not-yet
+---
+## 루트 레이아웃의 클라이언트 컴포넌트는 클라이언트 사이드 전환에서 리마운트되지 않는다
+
+**상황**: Task 10에서 "좋아요를 받은 작성자가 다음에 로그인해서 페이지를 열면 업적 토스트가 뜬다" 기능을 만들었는데, 실제 앱에서 로그인 폼 제출(서버 액션의 redirect) 직후에는 토스트가 안 뜨고, Playwright 테스트에서 `authorPage.goto("/")`로 강제 완전 네비게이션을 하면 떴다. 원인: `AchievementNotifier`가 루트 레이아웃에 있어 앱 전체 세션 동안 한 번만 마운트되고, `useEffect(() => {...}, [])`가 딱 한 번(로그인 전, 게스트 상태로) 실행된 뒤 그 뒤로 다시 실행되지 않았다. 서버 액션의 `redirect()`가 만드는 클라이언트 사이드 전환은 레이아웃을 리마운트시키지 않기 때문.
+**판단**: `usePathname()`을 의존성 배열에 넣어 페이지 이동마다 effect가 다시 실행되게 고침. 이건 테스트만의 문제가 아니라 실사용자도 겪을 버그였음 — 테스트에서 우회(`goto`로 강제 새로고침)하는 대신 근본 원인을 고쳤다.
+**다시 마주칠 가능성**: 높음 — 로그인 상태나 URL에 따라 한 번만 실행돼야 하는 게 아니라 "현재 페이지마다" 다시 확인해야 하는 로직을 루트 레이아웃의 client component에 넣을 때마다 반복될 문제. 이런 컴포넌트는 기본적으로 `usePathname()`(또는 관련 상태)을 의존성에 넣는 걸 원칙으로 삼는 게 낫다.
