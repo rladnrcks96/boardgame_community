@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe: boardgame-wiki</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root {
+    --w-bg: #f5f5f5;
+    --w-border: #ccc;
+    --w-text: #555;
+    --w-muted: #aaa;
+    --w-fill: #eee;
+  }
+
+  * {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--w-text);
+  }
+
+  body { background: var(--w-bg); }
+
+  nav { position: sticky; top: 0; z-index: 40; background: var(--w-bg); border-bottom: 1px solid var(--w-border); }
+  nav button { cursor: pointer; font-size: 13px; }
+  nav button:hover { background: var(--w-fill); border-radius: 4px; }
+  nav button.active { font-weight: bold; border-bottom: 2px solid var(--w-text); }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .vp-toggle button {
+    font-size: 12px; padding: 2px 8px;
+    border: 1px solid var(--w-border); cursor: pointer; background: white;
+  }
+  .vp-toggle button:first-child { border-radius: 4px 0 0 4px; }
+  .vp-toggle button:last-child { border-radius: 0 4px 4px 0; border-left: none; }
+  .vp-toggle button.active { background: var(--w-text); color: white; }
+
+  body.viewport-mobile .screen-content {
+    max-width: 375px !important;
+    margin: 24px auto !important;
+    border: 2px solid var(--w-border);
+    border-radius: 24px;
+    min-height: 667px;
+    background: white;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 32px 16px !important;
+  }
+
+  .screen-notes {
+    background: #fffde7;
+    border-left: 3px solid #ffd54f;
+    padding: 12px 16px;
+    margin-top: 24px;
+    font-size: 13px;
+    border-radius: 0 4px 4px 0;
+  }
+  .screen-notes summary {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    color: #b0a050;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .screen-notes p { margin: 6px 0 2px; color: #777; }
+  .screen-notes ul { margin: 4px 0 0 16px; padding: 0; color: #777; }
+  .screen-notes li { margin: 2px 0; }
+
+  /* 게임 상세 내부 서브탭 (와이어프레임 전용 로컬 토글) */
+  .w-game-tab-btn { color: var(--w-muted); border-bottom: 2px solid transparent; padding-bottom: 8px; }
+  .w-game-tab-btn.active { color: var(--w-text); border-color: var(--w-text); font-weight: bold; }
+  .w-board-cat-btn { padding: 2px 10px; border: 1px solid var(--w-border); border-radius: 999px; color: var(--w-muted); }
+  .w-board-cat-btn.active { color: var(--w-text); border-color: var(--w-text); font-weight: bold; background: var(--w-fill); }
+  .w-tag-chip { font-size: 10px; border-radius: 999px; padding: 2px 8px; background: var(--w-fill); }
+  .w-card { border: 1px solid var(--w-border); border-radius: 6px; }
+</style>
+</head>
+<body class="p-0 m-0 viewport-mobile">
+
+<nav class="flex items-center gap-4 px-6 py-2">
+  <span class="text-xs" style="color:var(--w-muted)">wireframe</span>
+  <button id="nav-0" onclick="show(0)" class="px-2 py-1">메인 페이지</button>
+  <button id="nav-1" onclick="show(1)" class="px-2 py-1">게임 상세</button>
+  <button id="nav-2" onclick="show(2)" class="px-2 py-1">게시판</button>
+  <button id="nav-3" onclick="show(3)" class="px-2 py-1">회원가입</button>
+  <button id="nav-4" onclick="show(4)" class="px-2 py-1">로그인</button>
+  <button id="nav-5" onclick="show(5)" class="px-2 py-1">위키 편집</button>
+  <button id="nav-6" onclick="show(6)" class="px-2 py-1">리뷰 작성</button>
+  <button id="nav-7" onclick="show(7)" class="px-2 py-1">게시글 작성</button>
+  <button id="nav-8" onclick="show(8)" class="px-2 py-1">게시글 상세</button>
+  <button id="nav-9" onclick="show(9)" class="px-2 py-1">프로필</button>
+  <div class="vp-toggle flex ml-auto">
+    <button id="vp-desktop" onclick="setViewport('desktop')">Desktop</button>
+    <button id="vp-mobile" onclick="setViewport('mobile')" class="active">Mobile</button>
+  </div>
+</nav>
+
+<!-- ============================================================ -->
+<!-- Screen 0: 메인 페이지 -->
+<!-- ============================================================ -->
+<div id="screen-0" class="screen" data-scenario="scenario-3, scenario-4">
+  <div class="screen-content @container max-w-6xl mx-auto p-0">
+
+    <header class="flex flex-col @md:flex-row @md:items-center gap-3 px-4 py-3 border-b" style="border-color:var(--w-border)">
+      <span class="font-bold text-sm flex items-center gap-1 shrink-0">
+        <i data-lucide="dice-5" class="w-4 h-4"></i>보드게임위키
+      </span>
+      <div class="flex-1 @md:mx-4">
+        <div class="flex items-center gap-2 border rounded px-2 py-1" style="border-color:var(--w-border); background:var(--w-fill)">
+          <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          <input class="bg-transparent text-xs flex-1 outline-none" placeholder="게임 이름 검색 (예: 글룸)" />
+        </div>
+      </div>
+      <div class="flex items-center gap-2 justify-end text-xs shrink-0">
+        <button class="px-3 py-1 border rounded" style="border-color:var(--w-border)" onclick="show(4)">로그인</button>
+        <button class="px-3 py-1 border rounded" style="background:var(--w-text); color:white;" onclick="show(3)">회원가입</button>
+      </div>
+    </header>
+
+    <div class="p-4">
+      <h2 class="text-xs font-bold mb-3" style="color:var(--w-muted)">BGG 랭킹 순</h2>
+
+      <div class="grid grid-cols-2 @md:grid-cols-4 gap-3">
+        <div class="w-card p-2 flex flex-col gap-1 cursor-pointer" onclick="show(1)">
+          <div class="aspect-square flex items-center justify-center rounded" style="background:var(--w-fill)">
+            <i data-lucide="image" class="w-6 h-6" style="color:var(--w-muted)"></i>
+          </div>
+          <div class="flex items-center justify-between text-[10px]" style="color:var(--w-muted)">
+            <span>BGG #1</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3"></i>4.2</span>
+          </div>
+          <span class="text-xs font-medium truncate">글룸헤이븐</span>
+        </div>
+        <div class="w-card p-2 flex flex-col gap-1 cursor-pointer" onclick="show(1)">
+          <div class="aspect-square flex items-center justify-center rounded" style="background:var(--w-fill)">
+            <i data-lucide="image" class="w-6 h-6" style="color:var(--w-muted)"></i>
+          </div>
+          <div class="flex items-center justify-between text-[10px]" style="color:var(--w-muted)">
+            <span>BGG #2</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3"></i>4.5</span>
+          </div>
+          <span class="text-xs font-medium truncate">브라스: 버밍엄</span>
+        </div>
+        <div class="w-card p-2 flex flex-col gap-1 cursor-pointer" onclick="show(1)">
+          <div class="aspect-square flex items-center justify-center rounded" style="background:var(--w-fill)">
+            <i data-lucide="image" class="w-6 h-6" style="color:var(--w-muted)"></i>
+          </div>
+          <div class="flex items-center justify-between text-[10px]" style="color:var(--w-muted)">
+            <span>BGG #3</span>
+            <span style="color:var(--w-muted)">리뷰 없음</span>
+          </div>
+          <span class="text-xs font-medium truncate">아크노바</span>
+        </div>
+        <div class="w-card p-2 flex flex-col gap-1 cursor-pointer" onclick="show(1)">
+          <div class="aspect-square flex items-center justify-center rounded" style="background:var(--w-fill)">
+            <i data-lucide="image" class="w-6 h-6" style="color:var(--w-muted)"></i>
+          </div>
+          <div class="flex items-center justify-between text-[10px]" style="color:var(--w-muted)">
+            <span>BGG #4</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3"></i>4.0</span>
+          </div>
+          <span class="text-xs font-medium truncate">테라포밍 마스</span>
+        </div>
+        <div class="w-card p-2 flex flex-col gap-1 cursor-pointer" onclick="show(1)">
+          <div class="aspect-square flex items-center justify-center rounded" style="background:var(--w-fill)">
+            <i data-lucide="image" class="w-6 h-6" style="color:var(--w-muted)"></i>
+          </div>
+          <div class="flex items-center justify-between text-[10px]" style="color:var(--w-muted)">
+            <span>BGG #5</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3"></i>4.7</span>
+          </div>
+          <span class="text-xs font-medium truncate">윙스팬</span>
+        </div>
+        <div class="w-card p-2 flex flex-col gap-1 cursor-pointer" onclick="show(1)">
+          <div class="aspect-square flex items-center justify-center rounded" style="background:var(--w-fill)">
+            <i data-lucide="image" class="w-6 h-6" style="color:var(--w-muted)"></i>
+          </div>
+          <div class="flex items-center justify-between text-[10px]" style="color:var(--w-muted)">
+            <span>BGG #6</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3"></i>3.9</span>
+          </div>
+          <span class="text-xs font-medium truncate">마피아</span>
+        </div>
+        <div class="w-card p-2 flex flex-col gap-1 cursor-pointer" onclick="show(1)">
+          <div class="aspect-square flex items-center justify-center rounded" style="background:var(--w-fill)">
+            <i data-lucide="image" class="w-6 h-6" style="color:var(--w-muted)"></i>
+          </div>
+          <div class="flex items-center justify-between text-[10px]" style="color:var(--w-muted)">
+            <span>BGG #7</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3"></i>4.1</span>
+          </div>
+          <span class="text-xs font-medium truncate">스플렌더</span>
+        </div>
+        <div class="w-card p-2 flex flex-col gap-1 cursor-pointer" onclick="show(1)">
+          <div class="aspect-square flex items-center justify-center rounded" style="background:var(--w-fill)">
+            <i data-lucide="image" class="w-6 h-6" style="color:var(--w-muted)"></i>
+          </div>
+          <div class="flex items-center justify-between text-[10px]" style="color:var(--w-muted)">
+            <span>BGG #8</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3"></i>4.4</span>
+          </div>
+          <span class="text-xs font-medium truncate">아그리콜라</span>
+        </div>
+      </div>
+
+      <div class="screen-notes">
+        <details open>
+          <summary>Notes</summary>
+          <p>사이트 진입 시 기본 화면. 게스트도 전체 접근 가능.</p>
+          <ul>
+            <li>트리거: 첫 진입, 로고 클릭</li>
+            <li>인터랙션: 검색창에 게임 이름 입력 시 그리드가 검색 결과로 교체 (scenario-4) / 카드 클릭 → 게임 상세로 이동</li>
+            <li>전환: "로그인"/"회원가입" 클릭 → 각 화면으로 이동. 로그인 상태에서는 우측 버튼 두 개가 아바타 아이콘 하나로 대체됨(게임 상세 화면에서 확인)</li>
+          </ul>
+        </details>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Screen 1: 게임 상세 -->
+<!-- ============================================================ -->
+<div id="screen-1" class="screen" data-scenario="scenario-5, scenario-7">
+  <div class="screen-content @container max-w-6xl mx-auto p-0">
+
+    <header class="flex flex-col @md:flex-row @md:items-center gap-3 px-4 py-3 border-b" style="border-color:var(--w-border)">
+      <span class="font-bold text-sm flex items-center gap-1 shrink-0">
+        <i data-lucide="dice-5" class="w-4 h-4"></i>보드게임위키
+      </span>
+      <div class="flex-1 @md:mx-4">
+        <div class="flex items-center gap-2 border rounded px-2 py-1" style="border-color:var(--w-border); background:var(--w-fill)">
+          <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          <input class="bg-transparent text-xs flex-1 outline-none" placeholder="게임 이름 검색" />
+        </div>
+      </div>
+      <div class="flex items-center gap-2 justify-end text-xs shrink-0">
+        <i data-lucide="bell" class="w-4 h-4"></i>
+        <div class="flex items-center gap-1 px-2 py-1 border rounded cursor-pointer" style="border-color:var(--w-border)" onclick="show(9)">
+          <i data-lucide="user-circle" class="w-4 h-4"></i>
+          <span>닉네임A</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="p-4">
+
+      <div class="flex gap-4 flex-col @md:flex-row">
+        <div class="w-full @md:w-40 aspect-square flex items-center justify-center rounded shrink-0" style="background:var(--w-fill)">
+          <i data-lucide="image" class="w-8 h-8" style="color:var(--w-muted)"></i>
+        </div>
+        <div class="flex-1">
+          <h1 class="text-lg font-bold">글룸헤이븐</h1>
+          <div class="flex flex-wrap gap-2 mt-1 text-[10px]" style="color:var(--w-muted)">
+            <span class="border rounded px-1.5 py-0.5" style="border-color:var(--w-border)">2-4인</span>
+            <span class="border rounded px-1.5 py-0.5" style="border-color:var(--w-border)">60-120분</span>
+            <span class="border rounded px-1.5 py-0.5" style="border-color:var(--w-border)">난이도 상</span>
+            <span class="border rounded px-1.5 py-0.5" style="border-color:var(--w-border)">협력</span>
+          </div>
+          <div class="flex items-center gap-1 mt-2 text-xs">
+            <i data-lucide="star" class="w-3.5 h-3.5"></i> 4.2 (18개 리뷰)
+          </div>
+          <div class="flex flex-wrap gap-1 mt-2">
+            <span class="w-tag-chip">마피아류 5명</span>
+            <span class="w-tag-chip">뉴비친화적 3명</span>
+            <span class="w-tag-chip">고인물용 4명</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 서브탭 -->
+      <div class="flex items-center gap-4 mt-5 border-b text-xs" style="border-color:var(--w-border)">
+        <button class="w-game-tab-btn active" data-tab="wiki" onclick="showGameTab('wiki')">위키</button>
+        <button class="w-game-tab-btn" data-tab="review" onclick="showGameTab('review')">리뷰</button>
+        <button class="ml-auto mb-2 border rounded px-2 py-1 flex items-center gap-1" style="border-color:var(--w-border); color:var(--w-muted)" onclick="show(2)">
+          게시판 보기<i data-lucide="arrow-right" class="w-3 h-3"></i>
+        </button>
+      </div>
+
+      <!-- 위키 탭 -->
+      <div class="w-game-panel" data-tab-panel="wiki">
+        <div class="flex justify-between items-center mt-4">
+          <span class="text-xs font-bold" style="color:var(--w-muted)">위키 본문</span>
+          <button class="text-xs border rounded px-2 py-1 flex items-center gap-1" style="border-color:var(--w-border)" onclick="show(5)">
+            <i data-lucide="pencil" class="w-3 h-3"></i>편집
+          </button>
+        </div>
+        <p class="text-xs mt-2 leading-relaxed">
+          각 플레이어는 캐릭터를 맡아 시나리오를 진행합니다. 카드를 이용해 행동력과 이동력을 동시에 정하며,
+          카드가 소진되면 캐릭터는 휴식을 취해야 합니다. 캠페인 진행에 따라 새로운 카드와 캐릭터가 해금됩니다.
+        </p>
+
+        <details class="mt-4 text-xs">
+          <summary style="color:var(--w-muted)" class="cursor-pointer">편집 이력 (3)</summary>
+          <ul class="mt-2 space-y-1" style="color:var(--w-muted)">
+            <li>닉네임A · 2026-07-01</li>
+            <li>닉네임B · 2026-06-20</li>
+            <li>닉네임A · 2026-06-10</li>
+          </ul>
+        </details>
+      </div>
+
+      <!-- 리뷰 탭 -->
+      <div class="w-game-panel hidden" data-tab-panel="review">
+        <div class="flex justify-between items-center mt-4">
+          <span class="text-xs font-bold" style="color:var(--w-muted)">리뷰 (18)</span>
+          <button class="text-xs border rounded px-2 py-1" style="border-color:var(--w-border)" onclick="show(6)">리뷰 작성</button>
+        </div>
+        <div class="mt-3 space-y-3">
+          <div class="w-card p-2">
+            <div class="flex justify-between text-xs">
+              <span class="font-medium">닉네임C</span>
+              <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3"></i>5</span>
+            </div>
+            <p class="text-xs mt-1">캠페인이 정말 깊습니다. 다만 룰이 복잡해서 처음엔 어려워요.</p>
+            <div class="flex gap-1 mt-2">
+              <span class="w-tag-chip">고인물용</span>
+              <span class="w-tag-chip">협력</span>
+            </div>
+          </div>
+          <div class="w-card p-2">
+            <div class="flex justify-between text-xs">
+              <span class="font-medium">닉네임D</span>
+              <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3"></i>3</span>
+            </div>
+            <p class="text-xs mt-1">기대했던 것보다 셋업이 오래 걸려요.</p>
+            <div class="flex gap-1 mt-2">
+              <span class="w-tag-chip">두뇌게임</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-notes">
+        <details open>
+          <summary>Notes</summary>
+          <p>게임 상세 페이지 — 위키/리뷰는 이 페이지의 서브탭, 게시판은 별도 화면으로 분리(우측 상단 "게시판 보기"). 읽기는 게스트도 가능(이 화면은 로그인 상태 예시).</p>
+          <ul>
+            <li>트리거: 메인 그리드 카드 클릭 또는 검색 결과 클릭</li>
+            <li>인터랙션: 서브탭 클릭 → 해당 패널로 전환 / "편집" 클릭 → 위키 편집 화면 / "리뷰 작성" 클릭 → 리뷰 작성 폼 / "게시판 보기" 클릭 → 게시판 화면으로 이동 / 편집 이력 summary 클릭 → 목록 펼침</li>
+            <li>전환: 게시판 화면에서 다시 이 화면으로 돌아올 수 있음(뒤로가기)</li>
+          </ul>
+        </details>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Screen 2: 게시판 -->
+<!-- ============================================================ -->
+<div id="screen-2" class="screen" data-scenario="scenario-8">
+  <div class="screen-content @container max-w-6xl mx-auto p-0">
+
+    <header class="flex flex-col @md:flex-row @md:items-center gap-3 px-4 py-3 border-b" style="border-color:var(--w-border)">
+      <span class="font-bold text-sm flex items-center gap-1 shrink-0">
+        <i data-lucide="dice-5" class="w-4 h-4"></i>보드게임위키
+      </span>
+      <div class="flex-1 @md:mx-4">
+        <div class="flex items-center gap-2 border rounded px-2 py-1" style="border-color:var(--w-border); background:var(--w-fill)">
+          <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          <input class="bg-transparent text-xs flex-1 outline-none" placeholder="게임 이름 검색" />
+        </div>
+      </div>
+      <div class="flex items-center gap-2 justify-end text-xs shrink-0">
+        <i data-lucide="bell" class="w-4 h-4"></i>
+        <div class="flex items-center gap-1 px-2 py-1 border rounded cursor-pointer" style="border-color:var(--w-border)" onclick="show(9)">
+          <i data-lucide="user-circle" class="w-4 h-4"></i>
+          <span>닉네임A</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="p-4">
+
+      <button class="text-xs flex items-center gap-1 mb-3" style="color:var(--w-muted)" onclick="show(1)">
+        <i data-lucide="arrow-left" class="w-3 h-3"></i>글룸헤이븐
+      </button>
+      <h2 class="text-sm font-bold mb-3">게시판</h2>
+
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <button class="w-board-cat-btn active" data-cat="strategy" onclick="showBoardCat('strategy')">공략</button>
+        <button class="w-board-cat-btn" data-cat="variant" onclick="showBoardCat('variant')">변형룰</button>
+        <button class="w-board-cat-btn" data-cat="meetup" onclick="showBoardCat('meetup')">모임구인</button>
+        <button class="ml-auto border rounded px-2 py-1" style="border-color:var(--w-border)" onclick="show(7)">글쓰기</button>
+      </div>
+
+      <div class="w-board-panel mt-3 space-y-2" data-cat-panel="strategy">
+        <div class="w-card p-2 flex justify-between items-center text-xs cursor-pointer" onclick="show(8)">
+          <span>1장 공략 - 초반 빌드 추천</span>
+          <span style="color:var(--w-muted)" class="flex items-center gap-2">
+            <span class="flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i>4</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="heart" class="w-3 h-3"></i>9</span>
+          </span>
+        </div>
+        <div class="w-card p-2 flex justify-between items-center text-xs">
+          <span>보스전 대응법 정리</span>
+          <span style="color:var(--w-muted)" class="flex items-center gap-2">
+            <span class="flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i>2</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="heart" class="w-3 h-3"></i>5</span>
+          </span>
+        </div>
+      </div>
+      <div class="w-board-panel hidden mt-3 space-y-2" data-cat-panel="variant">
+        <div class="w-card p-2 flex justify-between items-center text-xs">
+          <span>난이도 낮춘 하우스룰</span>
+          <span style="color:var(--w-muted)" class="flex items-center gap-2">
+            <span class="flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i>1</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="heart" class="w-3 h-3"></i>2</span>
+          </span>
+        </div>
+      </div>
+      <div class="w-board-panel hidden mt-3 space-y-2" data-cat-panel="meetup">
+        <div class="w-card p-2 flex justify-between items-center text-xs">
+          <span>주말 강남 모임 구합니다 (2명)</span>
+          <span style="color:var(--w-muted)" class="flex items-center gap-2">
+            <span class="flex items-center gap-0.5"><i data-lucide="message-circle" class="w-3 h-3"></i>6</span>
+            <span class="flex items-center gap-0.5"><i data-lucide="heart" class="w-3 h-3"></i>1</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="screen-notes">
+        <details open>
+          <summary>Notes</summary>
+          <p>특정 게임에 속한 게시판 — 게임 상세에서 "게시판 보기"로 진입. 카테고리 3개는 로컬 탭으로 전환.</p>
+          <ul>
+            <li>트리거: 게임 상세 화면의 "게시판 보기" 클릭</li>
+            <li>인터랙션: 카테고리 탭 클릭 → 해당 목록으로 전환 / 글 클릭 → 게시글 상세 화면 / "글쓰기" 클릭 → 글쓰기 화면</li>
+            <li>전환: 상단 게임 이름(← 글룸헤이븐) 클릭 → 게임 상세로 복귀</li>
+          </ul>
+        </details>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Screen 3: 회원가입 -->
+<!-- ============================================================ -->
+<div id="screen-3" class="screen" data-scenario="scenario-1">
+  <div class="screen-content @container max-w-6xl mx-auto p-0">
+
+    <header class="flex items-center gap-3 px-4 py-3 border-b" style="border-color:var(--w-border)">
+      <span class="font-bold text-sm flex items-center gap-1">
+        <i data-lucide="dice-5" class="w-4 h-4"></i>보드게임위키
+      </span>
+    </header>
+
+    <div class="p-4 max-w-sm mx-auto">
+      <h2 class="text-sm font-bold mb-4 text-center">회원가입</h2>
+
+      <div class="flex flex-col gap-3 text-xs">
+        <div>
+          <label class="block mb-1" style="color:var(--w-muted)">이메일</label>
+          <input class="w-full border rounded px-2 py-1.5" style="border-color:var(--w-border)" placeholder="you@example.com" />
+          <p class="text-[10px] mt-1" style="color:#c0392b">이미 사용 중인 이메일입니다</p>
+        </div>
+        <div>
+          <label class="block mb-1" style="color:var(--w-muted)">비밀번호</label>
+          <input type="password" class="w-full border rounded px-2 py-1.5" style="border-color:var(--w-border)" placeholder="••••••••" />
+        </div>
+        <button class="mt-2 w-full py-1.5 rounded text-white" style="background:var(--w-text)">가입하기</button>
+      </div>
+
+      <div class="mt-4 border rounded p-2 text-xs flex items-center gap-2" style="border-color:var(--w-border); background:var(--w-fill)">
+        <i data-lucide="mail-check" class="w-4 h-4 shrink-0"></i>
+        <span>가입 완료 후에는 "인증 메일을 확인해주세요" 안내로 이 영역이 대체됨</span>
+      </div>
+
+      <p class="text-center text-xs mt-4" style="color:var(--w-muted)">
+        이미 계정이 있으신가요? <a class="underline" onclick="show(4)">로그인</a>
+      </p>
+
+      <div class="screen-notes">
+        <details open>
+          <summary>Notes</summary>
+          <p>이메일+비밀번호 가입 폼. 하단 안내 박스는 가입 성공 시 폼을 대체하는 상태를 보여주는 예시.</p>
+          <ul>
+            <li>트리거: 메인/게시판 등에서 "회원가입" 클릭</li>
+            <li>인터랙션: "가입하기" 클릭 → 성공 시 인증 메일 안내로 전환 / "로그인" 링크 클릭 → 로그인 화면</li>
+            <li>전환: 이메일의 인증 링크 클릭(메일 클라이언트, 이 wireframe 범위 밖) → 인증 완료 후 로그인 화면으로</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Screen 4: 로그인 -->
+<!-- ============================================================ -->
+<div id="screen-4" class="screen" data-scenario="scenario-2">
+  <div class="screen-content @container max-w-6xl mx-auto p-0">
+
+    <header class="flex items-center gap-3 px-4 py-3 border-b" style="border-color:var(--w-border)">
+      <span class="font-bold text-sm flex items-center gap-1">
+        <i data-lucide="dice-5" class="w-4 h-4"></i>보드게임위키
+      </span>
+    </header>
+
+    <div class="p-4 max-w-sm mx-auto">
+      <h2 class="text-sm font-bold mb-4 text-center">로그인</h2>
+
+      <div class="flex flex-col gap-3 text-xs">
+        <div>
+          <label class="block mb-1" style="color:var(--w-muted)">이메일</label>
+          <input class="w-full border rounded px-2 py-1.5" style="border-color:var(--w-border)" placeholder="you@example.com" />
+        </div>
+        <div>
+          <label class="block mb-1" style="color:var(--w-muted)">비밀번호</label>
+          <input type="password" class="w-full border rounded px-2 py-1.5" style="border-color:var(--w-border)" placeholder="••••••••" />
+          <p class="text-[10px] mt-1" style="color:#c0392b">이메일 또는 비밀번호가 올바르지 않습니다</p>
+        </div>
+        <button class="mt-2 w-full py-1.5 rounded text-white" style="background:var(--w-text)" onclick="show(1)">로그인</button>
+      </div>
+
+      <p class="text-center text-xs mt-4" style="color:var(--w-muted)">
+        계정이 없으신가요? <a class="underline" onclick="show(3)">회원가입</a>
+      </p>
+
+      <div class="screen-notes">
+        <details open>
+          <summary>Notes</summary>
+          <p>이메일+비밀번호 로그인 폼. 에러 문구는 예시 데이터 — 실제 표시 조건은 spec.md 참고.</p>
+          <ul>
+            <li>트리거: 게스트 상태에서 편집/리뷰작성/글쓰기/댓글/좋아요 시도 시 자동 진입, 또는 "로그인" 클릭</li>
+            <li>인터랙션: "로그인" 클릭 → 이전에 하려던 화면 또는 메인으로 이동 / "회원가입" 링크 클릭 → 회원가입 화면</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Screen 5: 위키 편집 -->
+<!-- ============================================================ -->
+<div id="screen-5" class="screen" data-scenario="scenario-6">
+  <div class="screen-content @container max-w-6xl mx-auto p-0">
+
+    <header class="flex items-center gap-3 px-4 py-3 border-b" style="border-color:var(--w-border)">
+      <span class="font-bold text-sm flex items-center gap-1">
+        <i data-lucide="dice-5" class="w-4 h-4"></i>보드게임위키
+      </span>
+    </header>
+
+    <div class="p-4">
+      <button class="text-xs flex items-center gap-1 mb-3" style="color:var(--w-muted)" onclick="show(1)">
+        <i data-lucide="arrow-left" class="w-3 h-3"></i>글룸헤이븐
+      </button>
+      <h2 class="text-sm font-bold mb-3">위키 편집</h2>
+
+      <label class="block text-xs mb-1" style="color:var(--w-muted)">본문</label>
+      <textarea class="w-full border rounded p-2 text-xs" style="border-color:var(--w-border); min-height:180px">각 플레이어는 캐릭터를 맡아 시나리오를 진행합니다. 카드를 이용해 행동력과 이동력을 동시에 정하며,
+카드가 소진되면 캐릭터는 휴식을 취해야 합니다. 캠페인 진행에 따라 새로운 카드와 캐릭터가 해금됩니다.</textarea>
+      <p class="text-[10px] mt-1" style="color:var(--w-muted)">마크다운 형식으로 저장됩니다</p>
+
+      <div class="flex gap-2 mt-3">
+        <button class="text-xs px-3 py-1.5 rounded text-white" style="background:var(--w-text)">저장</button>
+        <button class="text-xs px-3 py-1.5 rounded border" style="border-color:var(--w-border)" onclick="show(1)">취소</button>
+      </div>
+
+      <div class="screen-notes">
+        <details open>
+          <summary>Notes</summary>
+          <p>위키 본문을 직접 수정하는 화면. 게임 상세의 "편집" 버튼에서 진입.</p>
+          <ul>
+            <li>트리거: 게임 상세 화면(위키 탭)에서 "편집" 클릭 (로그인 필요, 게스트는 로그인 화면으로 유도)</li>
+            <li>인터랙션: 본문 textarea 수정 → "저장" 클릭</li>
+            <li>전환: 저장/취소 모두 게임 상세 화면(위키 탭)으로 복귀</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Screen 6: 리뷰 작성 -->
+<!-- ============================================================ -->
+<div id="screen-6" class="screen" data-scenario="scenario-7">
+  <div class="screen-content @container max-w-6xl mx-auto p-0">
+
+    <header class="flex items-center gap-3 px-4 py-3 border-b" style="border-color:var(--w-border)">
+      <span class="font-bold text-sm flex items-center gap-1">
+        <i data-lucide="dice-5" class="w-4 h-4"></i>보드게임위키
+      </span>
+    </header>
+
+    <div class="p-4">
+      <button class="text-xs flex items-center gap-1 mb-3" style="color:var(--w-muted)" onclick="show(1)">
+        <i data-lucide="arrow-left" class="w-3 h-3"></i>글룸헤이븐
+      </button>
+      <h2 class="text-sm font-bold mb-3">리뷰 작성</h2>
+
+      <label class="block text-xs mb-1" style="color:var(--w-muted)">별점</label>
+      <div class="flex gap-1 mb-3">
+        <i data-lucide="star" class="w-5 h-5"></i>
+        <i data-lucide="star" class="w-5 h-5"></i>
+        <i data-lucide="star" class="w-5 h-5"></i>
+        <i data-lucide="star" class="w-5 h-5"></i>
+        <i data-lucide="star" class="w-5 h-5" style="color:var(--w-muted)"></i>
+      </div>
+
+      <label class="block text-xs mb-1" style="color:var(--w-muted)">태그 (선택, 여러 개 가능)</label>
+      <div class="mb-1 text-[10px]" style="color:var(--w-muted)">게임성</div>
+      <div class="flex flex-wrap gap-2 mb-2 text-xs">
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox" checked/>마피아류</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>덱빌딩</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>다이스</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox" checked/>협력</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>워커플레이스먼트</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>타일배치</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>경매/블러핑</label>
+      </div>
+      <div class="mb-1 text-[10px]" style="color:var(--w-muted)">플레이 경험</div>
+      <div class="flex flex-wrap gap-2 mb-3 text-xs">
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>뉴비친화적</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox" checked/>고인물용</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>파티게임</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>우정파괴</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>두뇌게임</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>가족용</label>
+        <label class="w-tag-chip flex items-center gap-1"><input type="checkbox"/>라이트</label>
+      </div>
+
+      <label class="block text-xs mb-1" style="color:var(--w-muted)">리뷰 본문</label>
+      <textarea class="w-full border rounded p-2 text-xs" style="border-color:var(--w-border); min-height:100px" placeholder="이 게임에 대한 생각을 남겨주세요"></textarea>
+
+      <div class="flex gap-2 mt-3">
+        <button class="text-xs px-3 py-1.5 rounded text-white" style="background:var(--w-text)">등록</button>
+        <button class="text-xs px-3 py-1.5 rounded border" style="border-color:var(--w-border)" onclick="show(1)">취소</button>
+      </div>
+
+      <div class="screen-notes">
+        <details open>
+          <summary>Notes</summary>
+          <p>별점 + 고정 태그(다중 선택, 자유 입력 불가) + 본문으로 구성. 게임 상세(리뷰 탭)의 "리뷰 작성"에서 진입.</p>
+          <ul>
+            <li>트리거: 게임 상세 화면(리뷰 탭)에서 "리뷰 작성" 클릭</li>
+            <li>인터랙션: 별점 선택 → 태그 체크 → 본문 입력 → "등록"</li>
+            <li>전환: 등록/취소 모두 게임 상세 화면(리뷰 탭)으로 복귀, 이미 작성한 리뷰가 있으면 이 폼에 기존 값이 채워진 상태로 진입(수정)</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Screen 7: 게시글 작성 -->
+<!-- ============================================================ -->
+<div id="screen-7" class="screen" data-scenario="scenario-8, scenario-12">
+  <div class="screen-content @container max-w-6xl mx-auto p-0">
+
+    <header class="flex items-center gap-3 px-4 py-3 border-b" style="border-color:var(--w-border)">
+      <span class="font-bold text-sm flex items-center gap-1">
+        <i data-lucide="dice-5" class="w-4 h-4"></i>보드게임위키
+      </span>
+    </header>
+
+    <div class="p-4">
+      <button class="text-xs flex items-center gap-1 mb-3" style="color:var(--w-muted)" onclick="show(2)">
+        <i data-lucide="arrow-left" class="w-3 h-3"></i>게시판
+      </button>
+      <h2 class="text-sm font-bold mb-3">글쓰기</h2>
+
+      <label class="block text-xs mb-1" style="color:var(--w-muted)">카테고리</label>
+      <div class="flex gap-2 mb-3 text-xs">
+        <button class="w-board-cat-btn active">공략</button>
+        <button class="w-board-cat-btn">변형룰</button>
+        <button class="w-board-cat-btn">모임구인</button>
+      </div>
+
+      <label class="block text-xs mb-1" style="color:var(--w-muted)">제목</label>
+      <input class="w-full border rounded px-2 py-1.5 text-xs mb-3" style="border-color:var(--w-border)" placeholder="제목을 입력해주세요" />
+
+      <label class="block text-xs mb-1" style="color:var(--w-muted)">본문</label>
+      <textarea class="w-full border rounded p-2 text-xs" style="border-color:var(--w-border); min-height:140px"></textarea>
+
+      <div class="flex gap-2 mt-3">
+        <button class="text-xs px-3 py-1.5 rounded text-white" style="background:var(--w-text)">등록</button>
+        <button class="text-xs px-3 py-1.5 rounded border" style="border-color:var(--w-border)" onclick="show(2)">취소</button>
+      </div>
+
+      <!-- 업적 토스트 예시 (scenario-12) -->
+      <div class="fixed bottom-4 right-4 w-card p-3 flex items-center gap-2 text-xs shadow-lg" style="background:white; max-width:260px;">
+        <i data-lucide="award" class="w-5 h-5 shrink-0"></i>
+        <div>
+          <p class="font-bold">업적 획득!</p>
+          <p style="color:var(--w-muted)">첫 게시글 작성</p>
+        </div>
+      </div>
+
+      <div class="screen-notes">
+        <details open>
+          <summary>Notes</summary>
+          <p>게시판 화면의 "글쓰기"에서 진입. 우측 하단 카드는 등록 성공 직후 잠시 나타나는 업적 토스트의 배치 예시(항상 떠있는 요소 아님).</p>
+          <ul>
+            <li>트리거: 게시판 화면에서 "글쓰기" 클릭</li>
+            <li>인터랙션: 카테고리 선택 → 제목/본문 입력 → "등록"</li>
+            <li>전환: 등록 후 게시판 화면(해당 카테고리)으로 복귀, 처음 조건을 만족하면 업적 토스트가 잠시 표시됨</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Screen 8: 게시글 상세 -->
+<!-- ============================================================ -->
+<div id="screen-8" class="screen" data-scenario="scenario-9, scenario-10">
+  <div class="screen-content @container max-w-6xl mx-auto p-0">
+
+    <header class="flex items-center gap-3 px-4 py-3 border-b" style="border-color:var(--w-border)">
+      <span class="font-bold text-sm flex items-center gap-1">
+        <i data-lucide="dice-5" class="w-4 h-4"></i>보드게임위키
+      </span>
+    </header>
+
+    <div class="p-4">
+      <button class="text-xs flex items-center gap-1 mb-3" style="color:var(--w-muted)" onclick="show(2)">
+        <i data-lucide="arrow-left" class="w-3 h-3"></i>게시판 · 공략
+      </button>
+
+      <h2 class="text-sm font-bold">1장 공략 - 초반 빌드 추천</h2>
+      <p class="text-[10px] mt-1" style="color:var(--w-muted)">닉네임C · 2026-07-05</p>
+      <p class="text-xs mt-3 leading-relaxed">초반에는 방어보다 카드 효율을 우선하는 빌드가 좋습니다. 1챕터 보스는 광역 공격을 자주 쓰니 산개 위주로 움직이세요.</p>
+
+      <button class="mt-3 flex items-center gap-1 text-xs px-2 py-1 border rounded" style="border-color:var(--w-border); background:var(--w-fill)">
+        <i data-lucide="heart" class="w-3.5 h-3.5"></i>좋아요 9
+      </button>
+
+      <div class="mt-5 pt-3 border-t" style="border-color:var(--w-border)">
+        <p class="text-xs font-bold mb-2" style="color:var(--w-muted)">댓글 (4)</p>
+        <div class="space-y-2 text-xs">
+          <div>
+            <span class="font-medium">닉네임D</span>
+            <p style="color:var(--w-muted)">저도 이 빌드로 클리어했어요, 감사합니다!</p>
+          </div>
+          <div>
+            <span class="font-medium">닉네임E</span>
+            <p style="color:var(--w-muted)">2인 플레이에도 적용 가능한가요?</p>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <input class="flex-1 border rounded px-2 py-1.5 text-xs" style="border-color:var(--w-border)" placeholder="댓글을 입력하세요" />
+          <button class="text-xs px-3 py-1.5 rounded text-white" style="background:var(--w-text)">등록</button>
+        </div>
+      </div>
+
+      <div class="screen-notes">
+        <details open>
+          <summary>Notes</summary>
+          <p>게시판 목록에서 글 클릭 시 진입하는 상세 화면. 좋아요와 댓글이 함께 있음(단일 깊이, 대댓글 없음).</p>
+          <ul>
+            <li>트리거: 게시판 화면에서 글 클릭</li>
+            <li>인터랙션: "좋아요" 클릭 → 버튼 상태·숫자 변경 / 댓글 입력 후 "등록" → 댓글 목록에 추가</li>
+            <li>전환: 상단 "게시판 · 공략" 클릭 → 게시판 화면(해당 카테고리)으로 복귀</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Screen 9: 프로필 -->
+<!-- ============================================================ -->
+<div id="screen-9" class="screen" data-scenario="scenario-11">
+  <div class="screen-content @container max-w-6xl mx-auto p-0">
+
+    <header class="flex items-center gap-3 px-4 py-3 border-b" style="border-color:var(--w-border)">
+      <span class="font-bold text-sm flex items-center gap-1">
+        <i data-lucide="dice-5" class="w-4 h-4"></i>보드게임위키
+      </span>
+    </header>
+
+    <div class="p-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background:var(--w-fill)">
+          <i data-lucide="user" class="w-6 h-6" style="color:var(--w-muted)"></i>
+        </div>
+        <div>
+          <p class="text-sm font-bold">닉네임A</p>
+          <p class="text-[10px]" style="color:var(--w-muted)">2026-05-01 가입</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mt-3">
+        <span class="w-tag-chip flex items-center gap-1"><i data-lucide="award" class="w-3 h-3"></i>첫 게시글 작성</span>
+        <span class="w-tag-chip flex items-center gap-1"><i data-lucide="award" class="w-3 h-3"></i>첫 위키 편집</span>
+        <span class="w-tag-chip flex items-center gap-1"><i data-lucide="award" class="w-3 h-3"></i>첫 좋아요 받음</span>
+      </div>
+
+      <div class="flex gap-4 mt-5 border-b text-xs" style="border-color:var(--w-border)">
+        <button class="w-game-tab-btn active" data-ptab="wiki" onclick="showProfileTab('wiki')">위키 편집</button>
+        <button class="w-game-tab-btn" data-ptab="review" onclick="showProfileTab('review')">리뷰</button>
+        <button class="w-game-tab-btn" data-ptab="post" onclick="showProfileTab('post')">게시글·댓글</button>
+      </div>
+
+      <div class="w-profile-panel mt-3 space-y-2 text-xs" data-ptab-panel="wiki">
+        <div class="w-card p-2 flex justify-between items-center">
+          <span>글룸헤이븐</span>
+          <span style="color:var(--w-muted)">2026-07-01</span>
+        </div>
+        <div class="w-card p-2 flex justify-between items-center">
+          <span>아크노바</span>
+          <span style="color:var(--w-muted)">2026-06-15</span>
+        </div>
+      </div>
+      <div class="w-profile-panel hidden mt-3 space-y-2 text-xs" data-ptab-panel="review">
+        <div class="w-card p-2 flex justify-between items-center">
+          <span>글룸헤이븐 · ★4</span>
+          <span style="color:var(--w-muted)">2026-07-01</span>
+        </div>
+      </div>
+      <div class="w-profile-panel hidden mt-3 space-y-2 text-xs" data-ptab-panel="post">
+        <p style="color:var(--w-muted)">아직 활동이 없습니다</p>
+      </div>
+
+      <div class="screen-notes">
+        <details open>
+          <summary>Notes</summary>
+          <p>본인 프로필. 뱃지는 항상 상단에 노출, 아래 3개 탭에서 활동 목록을 각각 확인.</p>
+          <ul>
+            <li>트리거: 헤더의 프로필 아이콘 클릭</li>
+            <li>인터랙션: 탭 클릭 → 해당 활동 목록으로 전환</li>
+            <li>전환: 목록 항목 클릭 → 해당 게임 상세/게시글 상세로 이동 (게시글·댓글 탭은 활동 없어 빈 상태 예시)</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showGameTab(tab) {
+  document.querySelectorAll('.w-game-tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+  document.querySelectorAll('.w-game-panel').forEach(function(p) { p.classList.toggle('hidden', p.dataset.tabPanel !== tab); });
+}
+function showBoardCat(cat) {
+  document.querySelectorAll('.w-board-cat-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.cat === cat); });
+  document.querySelectorAll('.w-board-panel').forEach(function(p) { p.classList.toggle('hidden', p.dataset.catPanel !== cat); });
+}
+function showProfileTab(tab) {
+  document.querySelectorAll('[data-ptab]').forEach(function(b) { b.classList.toggle('active', b.dataset.ptab === tab); });
+  document.querySelectorAll('.w-profile-panel').forEach(function(p) { p.classList.toggle('hidden', p.dataset.ptabPanel !== tab); });
+}
+
+var currentScreen = 0;
+var screenIds = [];
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('screen-' + id).classList.add('active');
+  document.querySelectorAll('nav button[id^="nav-"]').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('nav-' + id).classList.add('active');
+  currentScreen = screenIds.indexOf(id);
+}
+
+function setViewport(mode) {
+  document.body.classList.remove('viewport-mobile', 'viewport-desktop');
+  document.body.classList.add('viewport-' + mode);
+  document.querySelectorAll('.vp-toggle button').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('vp-' + mode).classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('nav button[id^="nav-"]').forEach(function(b) {
+    screenIds.push(parseInt(b.id.replace('nav-', '')));
+  });
+  var first = document.querySelector('nav button[id^="nav-"]');
+  if (first) first.click();
+  lucide.createIcons();
+});
+</script>
+</body>
+</html>
