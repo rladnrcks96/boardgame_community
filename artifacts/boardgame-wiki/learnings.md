@@ -39,3 +39,33 @@ applied: not-yet
 **상황**: Task 2 e2e 테스트(회원가입)를 두 번 돌리는 사이 실제 `supabase.auth.signUp()`을 여러 번 호출했고(테스트마다 새 이메일로 가입), Supabase 무료 티어 기본 SMTP의 시간당 발송 한도(`over_email_send_rate_limit`, HTTP 429)를 소진함. 처음엔 증상이 "새 이메일인데도 이미 가입된 이메일 에러가 뜬다"로 보였는데, 원인은 내 서버 액션이 signUp의 모든 에러를 "이미 사용 중인 이메일입니다"로 뭉뚱그려 처리해서 진짜 원인(레이트 리밋)을 가리고 있었던 것.
 **판단**: 액션 코드는 `error.code === "user_already_exists"`일 때만 중복 이메일 메시지를 보이고 그 외는 일반 에러 메시지로 수정. 테스트 전략은 실제 `signUp()`을 호출해 메일을 발송시키는 테스트(신규 가입, 중복 가입)는 한도가 풀릴 때까지 보류하고, 이메일 발송이 필요 없는 `admin.createUser`/`admin.generateLink` 기반 테스트(로그인, 인증링크 클릭)만 먼저 통과 확인. 사용자는 지금은 넘어가고 나중에 필요하면 Resend 같은 커스텀 SMTP를 붙이기로 결정.
 **다시 마주칠 가능성**: 높음 — 이메일 인증이 들어가는 모든 feature의 e2e 테스트에서 반복 실행 시 같은 한도에 걸릴 것. 앞으로 이메일 발송이 필요한 시나리오는 테스트에서 `admin.createUser(email_confirm: true/false)`처럼 이메일을 안 보내는 admin API로 상태를 세팅하고, 실제 `signUp()`을 거치는 테스트는 스위트당 최소 개수로 줄이는 규칙을 세워두는 게 좋겠다.
+
+---
+category: tooling
+applied: not-yet
+---
+## RLS 정책 누락은 에러 없이 조용히 실패한다 (UPDATE/SELECT)
+
+**상황**: Task 6 위키 편집에서 저장 후 본문이 반영 안 되는 버그. `games` 테이블에 SELECT 정책만 만들고 UPDATE 정책을 빠뜨렸는데, Supabase JS의 `.update()`는 RLS에 막혀도 에러를 던지지 않고 그냥 0행 반영으로 "성공"을 반환한다. INSERT의 `WITH CHECK` 위반은 실제 에러를 던지지만, UPDATE/SELECT의 `USING` 위반은 조용히 필터링만 된다는 걸 헷갈렸음.
+**판단**: 새 테이블을 만들 때 "누가 이 데이터를 쓰기(insert/update/delete)할 수 있는가"를 SELECT 정책 옆에 바로 같이 적는 습관을 들이기로 함. 이번엔 놓친 UPDATE 정책을 별도 마이그레이션으로 추가해 해결.
+**다시 마주칠 가능성**: 높음 — Task 7-10에서 posts/comments/post_likes 등 새 테이블을 만들 때마다 같은 실수를 반복할 수 있다. 각 테이블 마이그레이션 작성 시 select/insert/update/delete 네 가지를 체크리스트로 확인하는 게 낫다.
+
+---
+category: tooling
+applied: not-yet
+---
+## e2e 테스트가 실패하면 cleanup을 못 돌아 DB에 잔여 데이터가 쌓인다
+
+**상황**: wiki-edit 테스트를 디버깅하며 여러 번 실패했는데, 매번 assertion 실패 지점 이후의 `cleanupUserContent`/`deleteUserByEmail` 호출이 스킵되어, 같은 시딩 게임에 리비전이 누적되고 테스트 계정도 고아로 남음. 그 누적된 데이터가 "정확히 1개"를 기대하는 다음 assertion을 다시 깨뜨려 원인 파악을 더 어렵게 만들었다(진짜 앱 버그처럼 보였음).
+**판단**: 테스트 본문을 `try { ...assertion... } finally { ...cleanup... }`으로 감싸 assertion 실패와 무관하게 cleanup이 항상 실행되도록 수정. 이미 쌓인 잔여 데이터는 service_role 스크립트로 직접 지움.
+**다시 마주칠 가능성**: 높음 — 사용자/리뷰/게시글 등을 생성하는 모든 e2e 테스트에 해당하는 패턴. Task 7 이후 새로 쓰는 e2e 테스트는 처음부터 try/finally로 cleanup을 감싸는 걸 기본값으로 한다.
+
+---
+category: tooling
+applied: not-yet
+---
+## Next.js 라우트 어나운서가 role="alert"라 커스텀 에러 메시지 locator가 항상 strict-mode에서 깨진다
+
+**상황**: `page.getByRole("alert")`로 폼 에러 메시지를 찾는 테스트가 login/signup/wiki-edit 세 파일에서 반복적으로 "resolved to 2 elements" 에러를 냄. Next.js가 페이지 전환을 스크린리더에 알리기 위해 `<div role="alert" id="__next-route-announcer__">`를 항상 렌더링해서, 앱의 에러 메시지 `role="alert"`와 항상 겹친다.
+**판단**: `getByRole("alert")` 대신 `getByText(정확한 문구)` 또는 `[data-slot="field-error"]`처럼 더 구체적인 locator를 쓰도록 세 파일 모두 수정.
+**다시 마주칠 가능성**: 높음 — Next.js App Router를 쓰는 한 이 라우트 어나운서는 항상 존재한다. 앞으로 에러 메시지 assertion은 처음부터 `getByRole("alert")`를 쓰지 않는 걸 기본 규칙으로 삼는 게 낫다.

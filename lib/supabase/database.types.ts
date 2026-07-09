@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          id: number
+          key: string
+          label: string
+        }
+        Insert: {
+          id?: never
+          key: string
+          label: string
+        }
+        Update: {
+          id?: never
+          key?: string
+          label?: string
+        }
+        Relationships: []
+      }
       game_wiki_revisions: {
         Row: {
           content: string
@@ -211,6 +229,39 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: number
+          earned_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: number
+          earned_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: number
+          earned_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

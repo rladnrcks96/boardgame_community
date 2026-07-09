@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import type { Page } from "@playwright/test";
 
 function admin() {
   return createClient(
@@ -36,6 +37,14 @@ export async function generateSignupConfirmationLink(email: string, password: st
   });
   if (error) throw error;
   return data.properties;
+}
+
+export async function loginAs(page: Page, email: string, password: string) {
+  await page.goto("/login");
+  await page.getByLabel("이메일").fill(email);
+  await page.getByLabel("비밀번호").fill(password);
+  await page.getByRole("button", { name: "로그인" }).click();
+  await page.waitForURL("/");
 }
 
 export async function deleteUserByEmail(email: string) {
