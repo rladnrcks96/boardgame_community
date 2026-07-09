@@ -60,6 +60,12 @@ export default async function GameDetailPage({
         </div>
       </div>
 
+      <div className="mt-4 flex justify-end">
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/games/${game.id}/board`}>게시판 보기</Link>
+        </Button>
+      </div>
+
       <GameDetailTabs
         wiki={
           <div>

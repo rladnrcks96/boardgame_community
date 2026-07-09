@@ -48,4 +48,5 @@ export async function cleanupUserContent(userId: string) {
   );
   await db.from("reviews").delete().eq("user_id", userId);
   await db.from("game_wiki_revisions").delete().eq("editor_id", userId);
+  await db.from("posts").delete().eq("author_id", userId);
 }

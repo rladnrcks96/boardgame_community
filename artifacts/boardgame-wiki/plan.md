@@ -312,14 +312,14 @@
 
 ---
 
-### Task 8: 게시판 글 작성과 조회
+### Task 8: 게시판 글 작성과 조회 — ✅ 완료 (게임 상세 페이지에 "게시판 보기" 링크 추가 포함)
 
 - **담당 시나리오**: Scenario 8 (full), Scenario 12 (첫 게시글 작성 업적만)
 - **크기**: M (5 파일)
 - **의존성**: Task 3, Task 5, Task 6 (`awardIfFirst`)
 - **참조**: shadcn — tabs 재사용(카테고리 전환)
 - **구현 대상**:
-  - `supabase/migrations/0006_posts.sql`
+  - `supabase/migrations/0007_posts.sql`
   - `app/games/[id]/board/page.tsx`
   - `app/games/[id]/board/new/page.tsx`
   - `app/games/[id]/board/actions.ts` (`awardIfFirst('first_post')` 포함)
@@ -341,7 +341,7 @@
 - **크기**: M (4 파일)
 - **의존성**: Task 6 (`awardIfFirst` 재사용), Task 8
 - **구현 대상**:
-  - `supabase/migrations/0007_comments.sql`
+  - `supabase/migrations/0008_comments.sql`
   - `app/games/[id]/board/[postId]/page.tsx`
   - `app/games/[id]/board/[postId]/actions.ts` (`awardIfFirst('first_comment')` 포함)
   - `e2e/comment.spec.ts`
@@ -361,7 +361,7 @@
 - **크기**: M (3 파일)
 - **의존성**: Task 6 (`awardIfFirst` 재사용), Task 8, Task 9 (같은 화면에 붙는 액션)
 - **구현 대상**:
-  - `supabase/migrations/0008_post_likes.sql`
+  - `supabase/migrations/0009_post_likes.sql`
   - `app/games/[id]/board/[postId]/actions.ts` (좋아요 토글 + `awardIfFirst('first_post_liked')`은 좋아요를 받은 게시글 작성자 기준으로 지급)
   - `e2e/post-like.spec.ts`
 - **수용 기준**:
