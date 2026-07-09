@@ -48,5 +48,16 @@ export async function cleanupUserContent(userId: string) {
   );
   await db.from("reviews").delete().eq("user_id", userId);
   await db.from("game_wiki_revisions").delete().eq("editor_id", userId);
+  await db.from("comments").delete().eq("author_id", userId);
   await db.from("posts").delete().eq("author_id", userId);
+}
+
+export async function insertPost(gameId: number, authorId: string, category: string, title: string, body: string) {
+  const { data, error } = await admin()
+    .from("posts")
+    .insert({ game_id: gameId, author_id: authorId, category, title, body })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return data.id as number;
 }
