@@ -12,7 +12,7 @@ import {
   FieldError,
 } from "@/components/ui/field";
 
-export function LoginForm({ confirmed }: { confirmed?: boolean }) {
+export function LoginForm() {
   const [result, formAction, isPending] = useActionState<
     LoginResult | null,
     FormData
@@ -21,11 +21,6 @@ export function LoginForm({ confirmed }: { confirmed?: boolean }) {
   return (
     <main className="mx-auto max-w-sm p-4">
       <h1 className="mb-4 text-center text-sm font-bold">로그인</h1>
-      {confirmed && (
-        <p role="status" className="mb-4 rounded-md bg-muted p-3 text-sm">
-          인증이 완료되었습니다
-        </p>
-      )}
       <form action={formAction}>
         <FieldGroup>
           <Field>

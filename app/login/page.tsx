@@ -1,10 +1,5 @@
 import { LoginForm } from "./login-form";
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ confirmed?: string }>;
-}) {
-  const { confirmed } = await searchParams;
-  return <LoginForm confirmed={confirmed === "1"} />;
+export default function LoginPage() {
+  return <LoginForm />;
 }

@@ -12,23 +12,11 @@ import {
   FieldError,
 } from "@/components/ui/field";
 
-const initialState: SignupResult | null = null;
-
 export default function SignupPage() {
   const [result, formAction, isPending] = useActionState<
     SignupResult | null,
     FormData
-  >(async (_prev, formData) => signup(formData), initialState);
-
-  if (result?.status === "success") {
-    return (
-      <main className="mx-auto max-w-sm p-4">
-        <p role="status" className="rounded-md bg-muted p-3 text-sm">
-          인증 메일을 확인해주세요
-        </p>
-      </main>
-    );
-  }
+  >(async (_prev, formData) => signup(formData), null);
 
   return (
     <main className="mx-auto max-w-sm p-4">

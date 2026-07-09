@@ -18,27 +18,6 @@ export async function createConfirmedUser(email: string, password: string) {
   return data.user;
 }
 
-export async function createUnconfirmedUser(email: string, password: string) {
-  const { data, error } = await admin().auth.admin.createUser({
-    email,
-    password,
-    email_confirm: false,
-  });
-  if (error) throw error;
-  return data.user;
-}
-
-export async function generateSignupConfirmationLink(email: string, password: string) {
-  const { data, error } = await admin().auth.admin.generateLink({
-    type: "signup",
-    email,
-    password,
-    options: { redirectTo: "http://localhost:3000/auth/confirm" },
-  });
-  if (error) throw error;
-  return data.properties;
-}
-
 export async function loginAs(page: Page, email: string, password: string) {
   await page.goto("/login");
   await page.getByLabel("이메일").fill(email);
