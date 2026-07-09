@@ -11,8 +11,28 @@ export async function getGames(query?: string) {
     request = request.ilike("name", `%${query}%`);
   }
 
-  const { data } = await request;
-  return data ?? [];
+  const { data: games } = await request;
+  const gameList = games ?? [];
+  if (gameList.length === 0) return [];
+
+  const { data: reviews } = await supabase
+    .from("reviews")
+    .select("game_id, rating")
+    .in("game_id", gameList.map((g) => g.id));
+
+  const ratingsByGame = new Map<number, number[]>();
+  for (const r of reviews ?? []) {
+    const list = ratingsByGame.get(r.game_id) ?? [];
+    list.push(r.rating);
+    ratingsByGame.set(r.game_id, list);
+  }
+
+  return gameList.map((game) => {
+    const ratings = ratingsByGame.get(game.id);
+    const averageRating =
+      ratings && ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
+    return { ...game, averageRating };
+  });
 }
 
 export type TagCount = { name: string; count: number };

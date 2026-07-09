@@ -20,6 +20,7 @@ export function LikeButton({
 }) {
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
+  const [pending, setPending] = useState(false);
   const router = useRouter();
 
   async function handleClick() {
@@ -27,8 +28,11 @@ export function LikeButton({
       router.push("/login");
       return;
     }
+    if (pending) return;
 
+    setPending(true);
     const result = await toggleLike(postId);
+    setPending(false);
     if (result.status === "error") return;
 
     setLiked(result.liked);
@@ -36,7 +40,7 @@ export function LikeButton({
   }
 
   return (
-    <Button variant={liked ? "default" : "outline"} size="sm" onClick={handleClick}>
+    <Button variant={liked ? "default" : "outline"} size="sm" onClick={handleClick} disabled={pending}>
       <Heart className={cn("size-3.5", liked && "fill-current")} />
       좋아요 {count}
     </Button>

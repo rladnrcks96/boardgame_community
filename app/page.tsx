@@ -53,7 +53,7 @@ export default async function HomePage({
                   <span>BGG #{game.bgg_rank}</span>
                   <span className="flex items-center gap-0.5">
                     <Star className="size-3" />
-                    리뷰 없음
+                    {game.averageRating !== null ? game.averageRating.toFixed(1) : "리뷰 없음"}
                   </span>
                 </div>
                 <span className="truncate text-xs font-medium">{game.name}</span>

@@ -99,3 +99,13 @@ applied: not-yet
 **상황**: Task 11까지 끝내고 `bun run test:e2e`로 전체 스위트(40개)를 한 번에 돌렸더니, 개별 파일로는 매번 통과했던 로그인·게시글·리뷰 등 9개가 무작위로 실패. 실패한 케이스들은 코드가 아니라 로그인 자체가 안 되는 등 인프라성 실패였음 — Playwright의 기본 워커 수(CPU 코어 기반, 이 머신에서 8+)가 동시에 `signInWithPassword`/`admin.createUser`를 쏴서 Supabase 무료 티어의 Auth API 레이트리밋에 걸린 것.
 **판단**: `playwright.config.ts`에 `workers: 4`를 명시해 동시성을 낮춤. 이후 전체 스위트가 안정적으로 40/40 통과.
 **다시 마주칠 가능성**: 높음 — Supabase 무료 티어를 쓰는 한 테스트 스위트가 커질수록 계속 부딫힐 제약. 이미 규칙으로 반영(`workers: 4`)했으니 이후 feature에서 e2e가 늘어나면 이 값을 더 낮출지 재검토가 필요할 수 있다.
+
+---
+category: code-review
+applied: not-yet
+---
+## 독립 코드 리뷰에서 나온 Critical/Important 3건 — 전부 직접 수정
+
+**상황**: 11개 Task 완료 후 독립 code-reviewer 에이전트 호출. (1) 메인 페이지가 리뷰 유무와 무관하게 항상 "리뷰 없음"만 표시(Task1 때 작성한 뒤 Task7에서 리뷰가 생겼는데도 안 고침), (2) `lib/profile.ts`가 `new Map(array.map(...))`로 게임별 최신 편집만 남기려다가 배열의 "마지막" 값이 남는 특성 때문에 오히려 가장 오래된 편집일이 노출됨, (3) `games` UPDATE RLS가 `using(true) with check(true)`라서 로그인한 누구나 자기 세션으로 `wiki_body` 아닌 다른 컬럼(name, bgg_rank 등)도 직접 REST 호출로 바꿀 수 있었음.
+**판단**: 셋 다 Critical/Important라 execute-plan 규칙대로 바로 수정. (1) `getGames()`가 리뷰를 조회해 평균을 계산하도록 수정. (2) Map에 넣기 전에 이미 본 game_id는 건너뛰도록 수정(정렬이 desc이므로 첫 값이 최신). (3) RLS는 행 단위만 제어 가능하므로, 컬럼 단위 제한은 `revoke update on games from authenticated; grant update (wiki_body) on games to authenticated;`로 별도 처리.
+**다시 마주칠 가능성**: 중간 — (1)·(2) 패턴("나중 Task가 이전 Task의 화면에 데이터를 추가했는데 이전 화면이 그걸 안 읽어옴", "Map dedup 시 정렬 방향과 어느 값이 남는지 헷갈림")은 다른 feature에서도 재발 가능. (3)의 "RLS는 행 단위, 컬럼 단위는 GRANT로"는 일반적으로 알아두면 좋은 원칙이라 다음에 비슷한 "일부 컬럼만 쓰기 허용" 요구가 나오면 바로 적용 가능.
