@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { celebrateAchievement } from "@/lib/achievement-events";
 import { saveWikiEdit } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,7 +33,7 @@ export function EditForm({
     }
 
     if (result.achievement) {
-      toast(`업적 획득! ${result.achievement}`);
+      celebrateAchievement(result.achievement);
     }
     router.push(`/games/${gameId}`);
   }

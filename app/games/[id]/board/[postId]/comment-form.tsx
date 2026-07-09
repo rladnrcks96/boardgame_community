@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { celebrateAchievement } from "@/lib/achievement-events";
 import { createComment } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +29,7 @@ export function CommentForm({ postId, isLoggedIn }: { postId: number; isLoggedIn
       return;
     }
     if (result.achievement) {
-      toast(`업적 획득! ${result.achievement}`);
+      celebrateAchievement(result.achievement);
     }
     setBody("");
     router.refresh();

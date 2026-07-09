@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { toast } from "sonner";
 import { checkPendingAchievements } from "@/app/achievement-notifications-action";
+import { celebrateAchievement } from "@/lib/achievement-events";
 
 export function AchievementNotifier() {
   // 이 컴포넌트는 루트 레이아웃에 있어 클라이언트 사이드 전환(예: 로그인 후 리다이렉트)에서
@@ -12,7 +12,7 @@ export function AchievementNotifier() {
 
   useEffect(() => {
     checkPendingAchievements().then((labels) => {
-      labels.forEach((label) => toast(`업적 획득! ${label}`));
+      labels.forEach((label) => celebrateAchievement(label));
     });
   }, [pathname]);
 

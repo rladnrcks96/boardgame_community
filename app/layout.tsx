@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Toaster } from "@/components/ui/sonner";
 import { AchievementNotifier } from "@/components/achievements/achievement-notifier";
+import { AchievementCelebration } from "@/components/achievements/achievement-celebration";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -27,6 +28,7 @@ export default function RootLayout({
           {children}
           <Toaster />
           <AchievementNotifier />
+          <AchievementCelebration />
         </ThemeProvider>
       </body>
     </html>

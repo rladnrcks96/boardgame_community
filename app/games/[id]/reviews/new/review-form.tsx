@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { celebrateAchievement } from "@/lib/achievement-events";
 import { Star } from "lucide-react";
 import { saveReview } from "../actions";
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,7 @@ export function ReviewForm({
       return;
     }
     if (result.achievement) {
-      toast(`업적 획득! ${result.achievement}`);
+      celebrateAchievement(result.achievement);
     }
     router.push(`/games/${gameId}`);
   }
