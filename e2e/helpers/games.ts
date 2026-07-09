@@ -61,3 +61,10 @@ export async function insertPost(gameId: number, authorId: string, category: str
   if (error) throw error;
   return data.id as number;
 }
+
+export async function grantAchievement(userId: string, key: string) {
+  const db = admin();
+  const { data: achievement, error } = await db.from("achievements").select("id").eq("key", key).single();
+  if (error) throw error;
+  await db.from("user_achievements").insert({ user_id: userId, achievement_id: achievement.id });
+}

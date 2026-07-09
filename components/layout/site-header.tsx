@@ -16,11 +16,16 @@ export async function SiteHeader() {
       </Link>
       <div className="ml-auto flex items-center gap-2 text-xs">
         {data.user ? (
-          <form action={logout}>
-            <Button type="submit" variant="outline" size="sm">
-              로그아웃
+          <>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/profile">프로필</Link>
             </Button>
-          </form>
+            <form action={logout}>
+              <Button type="submit" variant="outline" size="sm">
+                로그아웃
+              </Button>
+            </form>
+          </>
         ) : (
           <>
             <Button asChild variant="outline" size="sm">

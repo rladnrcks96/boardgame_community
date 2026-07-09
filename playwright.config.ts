@@ -11,6 +11,8 @@ export default defineConfig({
   testDir: "./e2e",
   testMatch: /.*\.spec\.ts$/,
   fullyParallel: true,
+  // Supabase 무료 티어 Auth API가 워커를 너무 많이 띄우면 레이트리밋에 걸린다.
+  workers: 4,
   retries: process.env.CI ? 2 : 0,
   reporter: [["html", { open: "never" }]],
   use: {
