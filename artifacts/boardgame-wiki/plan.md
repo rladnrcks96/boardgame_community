@@ -283,7 +283,7 @@
 
 ---
 
-### Task 7: 리뷰 작성과 수정
+### Task 7: 리뷰 작성과 수정 — ✅ 완료
 
 - **담당 시나리오**: Scenario 7 (full), Scenario 12 (첫 리뷰 작성 업적만)
 - **크기**: M (3 파일 — `reviews`/`tags`/`review_tags` 스키마는 Task 5에서 이미 생성됨, 여기서는 쓰기 UI·액션만 추가)
