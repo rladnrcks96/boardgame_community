@@ -144,7 +144,7 @@
 
 ## Tasks
 
-### Task 1: 게임 시딩과 메인 페이지 랭킹 그리드
+### Task 1: 게임 시딩과 메인 페이지 랭킹 그리드 — ✅ 완료 (commit 5fa29a7)
 
 - **담당 시나리오**: Scenario 3 (full)
 - **크기**: M (5 파일)
@@ -168,12 +168,13 @@
 ### Task 2: 회원가입과 이메일 인증
 
 - **담당 시나리오**: Scenario 1 (full)
-- **크기**: M (3 파일)
+- **크기**: M (4 파일)
 - **의존성**: Task 1 (Supabase 클라이언트 헬퍼 재사용)
 - **참조**:
   - shadcn — field, input, button
   - web-design-guidelines — 폼 접근성(label, 에러 메시지 연결)
 - **구현 대상**:
+  - `supabase/migrations/0002_profiles.sql` (`profiles` 테이블 + `auth.users` insert 트리거로 자동 생성 — spec에 별도 닉네임 입력 화면이 없어 이메일 로컬파트로 자동 생성, 충돌 시 임의 숫자 접미사)
   - `app/signup/page.tsx`
   - `app/signup/actions.ts` (Zod 검증 + `supabase.auth.signUp`)
   - `e2e/signup.spec.ts`
@@ -235,8 +236,8 @@
   - shadcn — `bunx shadcn@latest add tabs` 먼저 실행
   - vercel-composition-patterns — 서브탭 합성
 - **구현 대상**:
-  - `supabase/migrations/0002_game_wiki_revisions.sql` (Task 6이 쓸 위키 이력 스키마를 여기서 먼저 생성 — 이 화면이 읽어야 하기 때문)
-  - `supabase/migrations/0003_reviews_tags.sql` (Task 7이 쓸 `reviews`/`tags`/`review_tags` 스키마를 여기서 먼저 생성 — 태그 집계·평균 평점을 이 화면이 읽어야 하기 때문)
+  - `supabase/migrations/0003_game_wiki_revisions.sql` (Task 6이 쓸 위키 이력 스키마를 여기서 먼저 생성 — 이 화면이 읽어야 하기 때문)
+  - `supabase/migrations/0004_reviews_tags.sql` (Task 7이 쓸 `reviews`/`tags`/`review_tags` 스키마를 여기서 먼저 생성 — 태그 집계·평균 평점을 이 화면이 읽어야 하기 때문)
   - `app/games/[id]/page.tsx`
   - `components/games/game-detail-tabs.tsx` (위키/리뷰 서브탭)
   - `lib/games.ts` (상세 조회: 메타데이터 + 평균 평점 + 태그 집계 + 편집 이력)
@@ -265,7 +266,7 @@
 - **참조**:
   - shadcn — `bunx shadcn@latest add sonner` 먼저 실행 (업적 토스트용)
 - **구현 대상**:
-  - `supabase/migrations/0004_achievements.sql` (`achievements` 시드 데이터 포함, `user_achievements`)
+  - `supabase/migrations/0005_achievements.sql` (`achievements` 시드 데이터 포함, `user_achievements`)
   - `lib/achievements.ts` (`awardIfFirst(userId, key)` — 해당 유형 행동이 이번이 처음인지 확인 후 지급, unique 제약으로 중복 방지)
   - `app/games/[id]/edit/page.tsx`
   - `app/games/[id]/edit/actions.ts` (본문 저장 + `game_wiki_revisions` insert + `awardIfFirst('first_wiki_edit')`)
@@ -318,7 +319,7 @@
 - **의존성**: Task 3, Task 5, Task 6 (`awardIfFirst`)
 - **참조**: shadcn — tabs 재사용(카테고리 전환)
 - **구현 대상**:
-  - `supabase/migrations/0005_posts.sql`
+  - `supabase/migrations/0006_posts.sql`
   - `app/games/[id]/board/page.tsx`
   - `app/games/[id]/board/new/page.tsx`
   - `app/games/[id]/board/actions.ts` (`awardIfFirst('first_post')` 포함)
@@ -340,7 +341,7 @@
 - **크기**: M (4 파일)
 - **의존성**: Task 6 (`awardIfFirst` 재사용), Task 8
 - **구현 대상**:
-  - `supabase/migrations/0006_comments.sql`
+  - `supabase/migrations/0007_comments.sql`
   - `app/games/[id]/board/[postId]/page.tsx`
   - `app/games/[id]/board/[postId]/actions.ts` (`awardIfFirst('first_comment')` 포함)
   - `e2e/comment.spec.ts`
@@ -360,7 +361,7 @@
 - **크기**: M (3 파일)
 - **의존성**: Task 6 (`awardIfFirst` 재사용), Task 8, Task 9 (같은 화면에 붙는 액션)
 - **구현 대상**:
-  - `supabase/migrations/0007_post_likes.sql`
+  - `supabase/migrations/0008_post_likes.sql`
   - `app/games/[id]/board/[postId]/actions.ts` (좋아요 토글 + `awardIfFirst('first_post_liked')`은 좋아요를 받은 게시글 작성자 기준으로 지급)
   - `e2e/post-like.spec.ts`
 - **수용 기준**:
